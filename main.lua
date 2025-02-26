@@ -1,18 +1,24 @@
+local interface = require('interface')
+local world_gen = require('world_gen')
+
+function ComparePoints(point_1, point_2) --Необходимо для сортировки точек через table.sort по координате X - требуется для шума Воронова
+    if point_1[1] < point_2[1] then
+        return true
+    else
+        return false
+    end
+end
 
 function love.load()
-    math.randomseed(os.time())
+    love.math.setRandomSeed(os.time())
 
     local WORLD_HEIGHT = 600
     local WORLD_WIDTH = 800
     local WORLD_VORONOI_POINTS_COUNT = 5
-    local WORLD_VORONOI_MINIMAL_DIST = 100
 
-    WORLD_VORONOI_POINTS_COORDINATES = {}
+    WORLD_VORONOI_POINTS = world_gen:CreatePoints(WORLD_WIDTH, WORLD_HEIGHT, WORLD_VORONOI_POINTS_COUNT) -- Генерация точек для генерации шума (WIP)
 
-    for i = 1, WORLD_VORONOI_POINTS_COUNT, 1 do
-        table.insert(WORLD_VORONOI_POINTS_COORDINATES, math.random(WORLD_WIDTH - 1)) --x-координата
-        table.insert(WORLD_VORONOI_POINTS_COORDINATES, math.random(WORLD_HEIGHT - 1)) --y-координата
-    end
+    table.sort(WORLD_VORONOI_POINTS, ComparePoints) -- Собственно сортировка точек по координате X
 
 end
 
@@ -21,5 +27,7 @@ end
 
 function love.draw()
     love.graphics.setPointSize(3)
-    love.graphics.points(WORLD_VORONOI_POINTS_COORDINATES)
+    for i = 1, #WORLD_VORONOI_POINTS do
+        love.graphics.points(WORLD_VORONOI_POINTS[i])
+    end
 end
